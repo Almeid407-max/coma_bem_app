@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import "../database/database_helper.dart";
+import '../components/campo_formulario_customizado.dart';
 
 class CadastroScreen extends StatefulWidget {
+  const CadastroScreen({Key? key}) : super(key: key);
+
   @override
   _CadastroScreenState createState() => _CadastroScreenState();
 }
@@ -11,6 +14,8 @@ class CadastroScreen extends StatefulWidget {
 class _CadastroScreenState extends State<CadastroScreen> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _culinariaController = TextEditingController();
+  final TextEditingController _pratoController = TextEditingController();
+  final TextEditingController _rankingController = TextEditingController();
 
   File? _fotoPrato;
 
@@ -18,6 +23,15 @@ class _CadastroScreenState extends State<CadastroScreen> {
   String _longitude = '';
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _culinariaController.dispose();
+    _pratoController.dispose();
+    _rankingController.dispose();
+    super.dispose();
+  }
 
   Future<void> _tirarFoto() async {
     final XFile? fotoCapturada = await _picker.pickImage(
@@ -41,10 +55,11 @@ class _CadastroScreenState extends State<CadastroScreen> {
       return;
     }
 
-    // CORREÇÃO: 'res_ds_tipo_culinaria' com underline
     Map<String, dynamic> dadosRestaurante = {
       'res_nm_restaurante': _nomeController.text.trim(),
       'res_ds_tipo_culinaria': _culinariaController.text.trim(),
+      'res_nm_prato': _pratoController.text.trim(),
+      'res_nu_ranking': _rankingController.text.trim(),
       'res_nu_latitude': _latitude,
       'res_nu_longitude': _longitude,
     };
@@ -78,36 +93,35 @@ class _CadastroScreenState extends State<CadastroScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // LOGO ADICIONADA AQUI
-            Center(
-              child: Image.asset(
-                'assets/images/logo.png',
-                height: 100, // Ajuste a altura se precisar
-              ),
-            ),
+            // Logo
+            Center(child: Image.asset('assets/images/logo.png', height: 100)),
             const SizedBox(height: 20),
 
-            // Campo: Nome do Restaurante
-            TextField(
-              controller: _nomeController,
-              decoration: const InputDecoration(
-                labelText: 'Nome do Restaurante',
-                prefixIcon: Icon(Icons.store, color: primaryColor),
-                border: OutlineInputBorder(),
-              ),
+            // =========================================================
+            // USO DO NOVO WIDGET REFATORADO
+            // =========================================================
+            CampoFormularioCustomizado(
+              titulo: 'Nome do Restaurante',
+              controlador: _nomeController,
             ),
-            const SizedBox(height: 15),
 
-            // Campo: Tipo de Culinária
-            TextField(
-              controller: _culinariaController,
-              decoration: const InputDecoration(
-                labelText: 'Tipo de Culinária (ex: Italiano, Japonês)',
-                prefixIcon: Icon(Icons.restaurant_menu, color: primaryColor),
-                border: OutlineInputBorder(),
-              ),
+            CampoFormularioCustomizado(
+              titulo: 'Tipo de Culinária',
+              controlador: _culinariaController,
             ),
-            const SizedBox(height: 20),
+
+            CampoFormularioCustomizado(
+              titulo: 'Nome do Prato',
+              controlador: _pratoController,
+            ),
+
+            CampoFormularioCustomizado(
+              titulo: 'Ranking (1 a 5)',
+              controlador: _rankingController,
+              tipoTeclado: TextInputType.number,
+            ),
+
+            const SizedBox(height: 10),
 
             const Text(
               'Foto do Prato:',

@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (tipo.contains('japones') || tipo.contains('japonês')) {
       return 'screens/imagem/restaurante_japones.jpg';
     }
-    return 'screens/imagem/restaurante_italiano.jpg';
+    return 'assets/images/restauranteitaliano.jpg';
   }
 
   @override
